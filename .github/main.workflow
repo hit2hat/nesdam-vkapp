@@ -6,11 +6,6 @@ workflow "Deploy prod" {
 action "Install" {
   uses = "borales/actions-yarn@master"
   args = "install"
-  env = {
-    BRANCH = "gh-pages"
-    FOLDER = "build"
-  }
-  secrets = ["ACCESS_TOKEN"]
 }
 
 action "Build" {
@@ -22,4 +17,9 @@ action "Build" {
 action "Deploy" {
   uses = "JamesIves/github-pages-deploy-action@master"
   needs = ["Build"]
+  env = {
+    BRANCH = "gh-pages"
+    FOLDER = "build"
+  }
+  secrets = ["ACCESS_TOKEN"]
 }
