@@ -62,12 +62,12 @@ const App = () => {
 							</FormStatus> : null
 					}
 					<Input
-						top="Имя"
+						top="Имя человека, из-за которого не сдал"
 						value={name}
 						onChange={(e) => setName(e.currentTarget.value.length <= 16 ? e.currentTarget.value : name)}
 					/>
 					<Input
-						top="Предмет / экзамен (в родительном падеже)"
+						top="Предмет / экзамен который не сдал"
 						value={subject}
 						onChange={(e) => setSubject(e.currentTarget.value.length <= 16 ? e.currentTarget.value : subject)}
 					/>
