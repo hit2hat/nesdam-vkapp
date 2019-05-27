@@ -24,6 +24,15 @@ const generateStory = (name, subject, callback) => {
 	background.src = require("./assets/template.png");
 };
 
+const dataURLtoFile = (dataurl, filename) => {
+	let arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+		bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+	while(n--){
+		u8arr[n] = bstr.charCodeAt(n);
+	}
+	return new File([u8arr], filename, {type:mime});
+};
+
 const App = () => {
 	const [ name, setName ] = useState("");
 	const [ subject, setSubject ] = useState("");
@@ -39,6 +48,18 @@ const App = () => {
 						<FormStatus title="Ура!" style={{background: '#528bcc', color: 'white'}}>
 							Ваша история опубликована!
 						</FormStatus> : null
+					}
+					{
+						status === "sharingError" ?
+							<FormStatus title="Жаль!" state="error">
+								Мы не смогли получить твой токен, чтобы загрузить стори
+							</FormStatus> : null
+					}
+					{
+						status === "error" ?
+							<FormStatus title="Ошибка!" state="error">
+								Произошла неизвестная ошибка...
+							</FormStatus> : null
 					}
 					<Input
 						top="Имя"
@@ -64,7 +85,7 @@ const App = () => {
 											method: "stories.getPhotoUploadServer",
 											params: {
 												access_token,
-												user_ids: "318254557",
+												add_to_news: 1,
 												link_text: "open",
 												link_url: "https://vk.com/app6999763",
 												v: "5.95"
@@ -74,14 +95,14 @@ const App = () => {
 												const uploadUrl = response.data.response.upload_url;
 
 												const request = new FormData();
-												request.append("file", story);
+												request.append("file", dataURLtoFile(story, "story.png"));
 
 												fetch("https://cors-anywhere.herokuapp.com/" + uploadUrl, {
 													method: "POST",
 													body: request
 												})
 													.then(r => r.json())
-													.then(console.log)
+													.then(r => r.error ? setStatus("error") : setStatus("shared"))
 													.catch(console.error);
 											})
 											.catch(console.error)
